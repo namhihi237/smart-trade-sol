@@ -1,8 +1,19 @@
 import { getTokenAddress } from './utils/bit-query';
-import { checkRugToken, getMetaDataToken, getScore, isFreezeRevoked, isMintRevoked } from './utils/check-rug';
+const Queue = require('bull');
+import {
+	checkRugToken,
+	getLp,
+	getLpLocked,
+	getMetaDataToken,
+	getScore,
+	isFreezeRevoked,
+	isLargeLpUnlocked,
+	isMintRevoked,
+} from './utils/check-rug';
 import { buildMessageNewToken, sendMessageToChannel } from './utils/telegram';
 
 const { WebSocket } = require('ws');
+const sendMessageQueue = new Queue('send-message-queue');
 
 const bitqueryConnection = new WebSocket(
 	`wss://streaming.bitquery.io/eap?token=${Bun.env.BITQUERY_TOKEN}`,
@@ -68,27 +79,55 @@ bitqueryConnection.on('open', () => {
 });
 
 bitqueryConnection.on('message', async (data: string) => {
-	const response = JSON.parse(data);
-	if (response.type === 'data') {
-		// Broadcast the data to all connected clients of your local server
-		const data = response?.payload?.data;
+	try {
+		const response = JSON.parse(data);
+		if (response.type === 'data') {
+			// Broadcast the data to all connected clients of your local server
+			const data = response?.payload?.data;
 
-		if (!data) return;
+			if (!data) return;
 
-		console.log('Received data from Bitquery');
+			console.log('Received data from Bitquery', new Date());
 
-		const tokenAddress = getTokenAddress(data);
+			const tokenAddress = getTokenAddress(data);
+			sendMessageQueue.add({ data, tokenAddress }, { delay: 1.5 * 60 * 1000 });
+		}
+	} catch (error) {
+		console.log(error);
+	}
+});
 
+sendMessageQueue.process(async (job: { data: { tokenAddress: any; data: any } }) => {
+	try {
+		console.log('sendMessageQueue process:', new Date());
+
+		const { tokenAddress, data } = job.data;
 		const rugData = await checkRugToken(tokenAddress);
+		console.log(rugData);
 
 		const tokenMetadata = getMetaDataToken(rugData);
 		const score = getScore(rugData);
 		const isFreeze = isFreezeRevoked(rugData);
 		const isMint = isMintRevoked(rugData);
+		const lp = getLp(rugData);
+		const largeLpUnlocked = isLargeLpUnlocked(rugData);
 
-		let message = buildMessageNewToken(data, tokenAddress, tokenMetadata, score, isFreeze, isMint);
-
-		sendMessageToChannel(message);
+		const lpLocked = getLpLocked(rugData);
+		// Call the function to send the message to the channel
+		let message = buildMessageNewToken(
+			data,
+			tokenAddress,
+			tokenMetadata,
+			score,
+			isFreeze,
+			isMint,
+			lp,
+			lpLocked,
+			largeLpUnlocked,
+		);
+		await sendMessageToChannel(message);
+	} catch (error) {
+		console.error('Error processing job:', error);
 	}
 });
 

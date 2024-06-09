@@ -31,15 +31,23 @@ export function buildMessageNewToken(
 	score: string,
 	isFreeze: boolean,
 	isMint: boolean,
+	lp: string,
+	lpLocked: string,
+	largeLpUnlocked: boolean,
 ) {
-	let message = `✅ New Token \n
+	let message = `🔥 New Token \n
 *Block Time:* ${convertToUTC7(data.Solana.Instructions[0].Block.Time)}\n
 *Name:* ${tokenMeta?.name} - ${tokenMeta?.symbol}\n
+*Liquid Pool*: ${lp}\n
+*Liquid Pool Locked*: ${lpLocked}\n
+
 *Address:* ${address}\n`;
 
+	message += '*Risk:*\n';
 	message += `*Score:* ${score}\n`;
 	message += `Freeze Revoked: ${isFreeze ? `✅` : '❌'} \n`;
 	message += `Mint Revoked: ${isMint ? `✅` : '❌'} \n`;
+	message += `Large Liquid Unlocked: ${largeLpUnlocked ? `✅` : '❌'} \n`;
 
 	message += `=> ${parseFloat(score) <= 800 ? 'GOOD ✅' : 'Danger ❌'}\n`;
 	return message;
