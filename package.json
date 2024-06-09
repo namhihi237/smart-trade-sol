@@ -1,0 +1,22 @@
+{
+  "name": "smart-trade",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run ./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@solana/web3.js": "0.30.8",
+    "axios": "^1.7.2",
+    "express": "^4.19.2",
+    "graphql-ws": "^5.16.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "ws": "^8.17.0"
+  }
+}
