@@ -90,7 +90,7 @@ bitqueryConnection.on('message', async (data: string) => {
 			console.log('Received data from Bitquery', new Date());
 
 			const tokenAddress = getTokenAddress(data);
-			sendMessageQueue.add({ data, tokenAddress }, { delay: 1.5 * 60 * 1000 });
+			sendMessageQueue.add({ data, tokenAddress }, { delay: 0.5 * 60 * 1000 });
 		}
 	} catch (error) {
 		console.log(error);

@@ -43,12 +43,12 @@ export function getLp(tokeData: { markets: { lp: { baseUSD: any; quoteUSD: any }
 	if (!tokeData || !tokeData.markets || !tokeData.markets[0] || !tokeData.markets[0].lp) {
 		return 0;
 	}
-	return tokeData.markets[0].lp.quoteUSD || tokeData.markets[0].lp.baseUSD || 0;
+	return parseInt(tokeData.markets[0].lp.quoteUSD || tokeData.markets[0].lp.baseUSD || 0);
 }
 
 export function getLpLocked(tokeData: { markets: { lp: { lpLockedUSD: any } }[] }) {
 	if (!tokeData || !tokeData.markets || !tokeData.markets[0] || !tokeData.markets[0].lp) {
 		return 0;
 	}
-	return tokeData.markets[0].lp.lpLockedUSD || 0;
+	return parseInt(tokeData.markets[0].lp.lpLockedUSD || 0);
 }
