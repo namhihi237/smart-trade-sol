@@ -1,5 +1,5 @@
 import { getTokenAddress } from './utils/bit-query';
-import { createClient } from 'redis';
+const Redis = require('ioredis');
 
 const Queue = require('bull');
 import {
@@ -14,13 +14,13 @@ import {
 } from './utils/check-rug';
 import { buildMessageNewToken, sendMessageToChannel } from './utils/telegram';
 
-const client = await createClient({
-	url: `redis://:${Bun.env.REDIS_PASSWORD}@${Bun.env.REDIS_HOST}:${Bun.env.REDIS_PORT}`,
-})
-	.on('error', (err) => console.log('Redis Client Error', err))
-	.connect();
+const client = new Redis({
+	port: Bun.env.REDIS_PORT, // Redis port
+	host: Bun.env.REDIS_HOST, // Redis host
+	password: Bun.env.REDIS_PASSWORD,
+});
 
-await client.set('test', 'test');
+await client.set('test 2', 'test');
 
 const { WebSocket } = require('ws');
 const sendMessageQueue = new Queue('send-message-queue');
