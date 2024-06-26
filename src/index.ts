@@ -17,6 +17,7 @@ import { buildMessageNewToken, sendMessageToChannel } from './utils/telegram';
 const client = new Redis({
 	port: Bun.env.REDIS_PORT, // Redis port
 	host: Bun.env.REDIS_HOST, // Redis host
+	username: 'default',
 	password: Bun.env.REDIS_PASSWORD,
 });
 
