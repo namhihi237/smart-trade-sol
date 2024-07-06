@@ -1,5 +1,4 @@
 import { getTokenAddress } from './utils/bit-query';
-const Redis = require('ioredis');
 
 const Queue = require('bull');
 import {
@@ -13,14 +12,6 @@ import {
 	isMintRevoked,
 } from './utils/check-rug';
 import { buildMessageNewToken, sendMessageToChannel } from './utils/telegram';
-
-const client = new Redis({
-	port: 6379, // Redis port
-	host: 'localhost', // Redis host
-	password: '1234567890',
-});
-
-await client.set('test 2', 'test');
 
 const { WebSocket } = require('ws');
 const sendMessageQueue = new Queue('send-message-queue');
@@ -107,39 +98,41 @@ bitqueryConnection.on('message', async (data: string) => {
 	}
 });
 
-sendMessageQueue.process(async (job: { data: { tokenAddress: any; data: any } }) => {
-	try {
-		console.log('sendMessageQueue process:', new Date());
+sendMessageQueue.process(
+	async (job: { data: { tokenAddress: any; data: any } }) => {
+		try {
+			console.log('sendMessageQueue process:', new Date());
 
-		const { tokenAddress, data } = job.data;
-		const rugData = await checkRugToken(tokenAddress);
-		console.log(rugData);
+			const { tokenAddress, data } = job.data;
+			const rugData = await checkRugToken(tokenAddress);
+			console.log(rugData);
 
-		const tokenMetadata = getMetaDataToken(rugData);
-		const score = getScore(rugData);
-		const isFreeze = isFreezeRevoked(rugData);
-		const isMint = isMintRevoked(rugData);
-		const lp = getLp(rugData);
-		const largeLpUnlocked = isLargeLpUnlocked(rugData);
+			const tokenMetadata = getMetaDataToken(rugData);
+			const score = getScore(rugData);
+			const isFreeze = isFreezeRevoked(rugData);
+			const isMint = isMintRevoked(rugData);
+			const lp = getLp(rugData);
+			const largeLpUnlocked = isLargeLpUnlocked(rugData);
 
-		const lpLocked = getLpLocked(rugData);
-		// Call the function to send the message to the channel
-		let message = buildMessageNewToken(
-			data,
-			tokenAddress,
-			tokenMetadata,
-			score,
-			isFreeze,
-			isMint,
-			lp,
-			lpLocked,
-			largeLpUnlocked,
-		);
-		await sendMessageToChannel(message);
-	} catch (error) {
-		console.error('Error processing job:', error);
-	}
-});
+			const lpLocked = getLpLocked(rugData);
+			// Call the function to send the message to the channel
+			let message = buildMessageNewToken(
+				data,
+				tokenAddress,
+				tokenMetadata,
+				score,
+				isFreeze,
+				isMint,
+				lp,
+				lpLocked,
+				largeLpUnlocked,
+			);
+			await sendMessageToChannel(message);
+		} catch (error) {
+			console.error('Error processing job:', error);
+		}
+	},
+);
 
 bitqueryConnection.on('close', () => {
 	console.log('Disconnected from Bitquery.');
