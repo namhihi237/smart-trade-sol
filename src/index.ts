@@ -127,7 +127,9 @@ sendMessageQueue.process(
 				lpLocked,
 				largeLpUnlocked,
 			);
-			await sendMessageToChannel(message);
+			if (score === -1) {
+				await sendMessageToChannel(message);
+			}
 		} catch (error) {
 			console.error('Error processing job:', error);
 		}
