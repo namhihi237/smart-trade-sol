@@ -21,7 +21,11 @@ export function buildMessageNewToken(
 			Instructions: {
 				Block: any;
 				Instruction: {
-					Accounts: { Address: string; IsWritable: any; Token: { Mint: any; Owner: any; ProgramId: any } }[];
+					Accounts: {
+						Address: string;
+						IsWritable: any;
+						Token: { Mint: any; Owner: any; ProgramId: any };
+					}[];
 				};
 			}[];
 		};
@@ -41,7 +45,7 @@ export function buildMessageNewToken(
 *Liquid Pool*: ${lp}$\n
 *Liquid Pool Locked*: ${lpLocked}$\n
 
-*Address:* ${address}\n`;
+*Address:* [https://dexscreener.com/search?q=${address}](${address})\n`;
 
 	message += '*Risk:*\n';
 	message += `*Score:* ${score}\n`;
@@ -49,6 +53,10 @@ export function buildMessageNewToken(
 	message += `Mint Revoked: ${isMint ? `✅` : '❌'} \n`;
 	message += `Large Liquid Unlocked: ${largeLpUnlocked ? `✅` : '❌'} \n`;
 
-	message += `=> ${parseFloat(score) <= 800 && parseFloat(score) !== 0 ? 'GOOD ✅' : 'Danger ❌'}\n`;
+	message += `=> ${
+		parseFloat(score) <= 800 && parseFloat(score) !== 0
+			? 'GOOD ✅'
+			: 'Danger ❌'
+	}\n`;
 	return message;
 }
