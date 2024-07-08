@@ -61,7 +61,6 @@ bitqueryConnection.on('open', () => {
                         Address
                         Token {
                           Mint
-                          Owner
                         }
                       }
                     }

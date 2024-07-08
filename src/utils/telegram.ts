@@ -23,7 +23,7 @@ export function buildMessageNewToken(
 				Instruction: {
 					Accounts: {
 						Address: string;
-						Token: { Mint: any; Owner: any };
+						Token: { Mint: any };
 					}[];
 				};
 			}[];
