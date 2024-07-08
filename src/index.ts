@@ -59,11 +59,9 @@ bitqueryConnection.on('open', () => {
                     Instruction {
                       Accounts {
                         Address
-                        IsWritable
                         Token {
                           Mint
                           Owner
-                          ProgramId
                         }
                       }
                     }
