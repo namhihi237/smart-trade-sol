@@ -1,5 +1,6 @@
 import { getTokenAddress } from './utils/bit-query';
-
+import { GoPlus, ErrorCode } from '@goplus/sdk-node';
+let chainId = 'solana';
 const Queue = require('bull');
 import {
 	checkRugToken,
@@ -102,7 +103,6 @@ sendMessageQueue.process(
 
 			const { tokenAddress, data } = job.data;
 			const rugData = await checkRugToken(tokenAddress);
-			console.log(rugData);
 
 			const tokenMetadata = getMetaDataToken(rugData);
 			const score = getScore(rugData);
@@ -124,6 +124,15 @@ sendMessageQueue.process(
 				lpLocked,
 				largeLpUnlocked,
 			);
+
+			let res = await GoPlus.addressSecurity(chainId, tokenAddress, 30);
+
+			if (res.code !== ErrorCode.SUCCESS) {
+				console.error(res.message);
+			} else {
+				console.log(res);
+			}
+
 			if (score === -1) {
 				await sendMessageToChannel(message);
 			}

@@ -12,6 +12,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@goplus/sdk-node": "^1.0.12",
     "@solana/web3.js": "0.30.8",
     "axios": "^1.7.2",
     "bull": "^4.12.9",
